@@ -3,13 +3,11 @@ package com.example.jsonkeeper
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.TextView
-import com.example.jsonkeeper.api.IJsonKeeperAPIClient
 import com.example.jsonkeeper.api.JsonKeeperAPIImpl
 import com.example.jsonkeeper.api.model.JsonKeeperResponse
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import retrofit2.create
 
 class MainActivity : AppCompatActivity() {
     lateinit var tvJsonResponse: TextView
@@ -33,6 +31,5 @@ class MainActivity : AppCompatActivity() {
             }
 
         })
-
     }
 }
