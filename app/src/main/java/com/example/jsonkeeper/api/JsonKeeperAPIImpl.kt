@@ -3,6 +3,7 @@ package com.example.jsonkeeper.api
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import hu.akarnokd.rxjava3.retrofit.RxJava3CallAdapterFactory
 import java.security.SecureRandom
 import javax.net.ssl.SSLContext
 import javax.net.ssl.TrustManager
@@ -20,6 +21,7 @@ class JsonKeeperAPIImpl {
     private fun provideRetrofit() = Retrofit.Builder()
         .baseUrl(BASE_URL)
         .client(getUnsafeOkHttpClient())
+        .addCallAdapterFactory(RxJava3CallAdapterFactory.create())
         .addConverterFactory(GsonConverterFactory.create())
         .build()
 
