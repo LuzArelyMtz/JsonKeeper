@@ -92,7 +92,7 @@ class JsonKeeperAPIImpl {
 }
 ```
 
-### Call
+### RxJava3
 
 > Text that is a quote
 
