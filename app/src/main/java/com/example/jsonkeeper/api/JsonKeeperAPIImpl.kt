@@ -15,7 +15,7 @@ import org.apache.http.conn.ssl.SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER
 class JsonKeeperAPIImpl {
     private val BASE_URL = "https://jsonkeeper.com"
 
-    fun getResponse() = provideRetrofit().create(IJsonKeeperAPIClient::class.java).getResponse()
+    suspend fun getResponse() = provideRetrofit().create(IJsonKeeperAPIClient::class.java).getResponse()
 
     private fun provideRetrofit() = Retrofit.Builder()
         .baseUrl(BASE_URL)
