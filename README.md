@@ -36,7 +36,7 @@ class TypicodeResponse : ArrayList<TypicodeResponseItem>()
 ``` kotlin
 interface IJsonKeeperAPIClient {
     @GET("/b/WN0G")
-    fun getResponse(): Single<JsonKeeperResponse>
+    fun getResponse(): Call<JsonKeeperResponse>
 }
 
 class JsonKeeperAPIImpl {
@@ -47,7 +47,6 @@ class JsonKeeperAPIImpl {
     private fun provideRetrofit() = Retrofit.Builder()
         .baseUrl(BASE_URL)
         .client(getUnsafeOkHttpClient())
-        .addCallAdapterFactory(RxJava3CallAdapterFactory.create())
         .addConverterFactory(GsonConverterFactory.create())
         .build()
 
@@ -98,21 +97,20 @@ class JsonKeeperAPIImpl {
 
 ``` kotlin
 private lateinit var tvJsonResponse: TextView
-private val disposable = CompositeDisposable()
 
 tvJsonResponse = findViewById(R.id.tvJsonResponse)
-        disposable.add(
-            JsonKeeperAPIImpl().getResponse()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(object : DisposableSingleObserver<JsonKeeperResponse>() {
-                    override fun onSuccess(response: JsonKeeperResponse) {
-                        tvJsonResponse.text = response.toString()
-                    }
 
-                    override fun onError(e: Throwable) {
-                        println(e.printStackTrace())
-                    }
-                })
-        )
+val call = JsonKeeperAPIImpl().getResponse()
+call.enqueue(object : Callback<JsonKeeperResponse> {
+    override fun onResponse(
+        call: Call<JsonKeeperResponse>,
+        response: Response<JsonKeeperResponse>
+    ) {
+        tvJsonResponse.text = response.body().toString()
+    }
+
+    override fun onFailure(call: Call<JsonKeeperResponse>, t: Throwable) {
+        println(t.printStackTrace().toString())
+    }
+})
 ```
