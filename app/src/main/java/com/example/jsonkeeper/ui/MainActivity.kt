@@ -1,26 +1,27 @@
 package com.example.jsonkeeper.ui
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import com.example.jsonkeeper.R
+import com.example.jsonkeeper.databinding.ActivityMainBinding
 import com.example.jsonkeeper.ui.adapter.JsonKeeperAdapter
 import com.example.jsonkeeper.viewmodel.JsonKeeperViewModel
 
+
 class MainActivity : AppCompatActivity() {
+    private lateinit var binding: ActivityMainBinding
     private lateinit var viewModel: JsonKeeperViewModel
 
     private var adapter = JsonKeeperAdapter(arrayListOf())
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-        val recyclerView = findViewById<RecyclerView>(R.id.rvJsonKeeper)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
-        recyclerView.apply {
+        binding.rvJsonKeeper.apply {
             layoutManager = LinearLayoutManager(context)
             adapter = adapter
         }
@@ -31,7 +32,7 @@ class MainActivity : AppCompatActivity() {
         viewModel.livedataResponse.observe(this, Observer { jsonKeeperList ->
             //adapter= JsonKeeperAdapter(arrayListOf(jsonKeeperList.))
             adapter.setNewList(jsonKeeperList)
-            recyclerView.adapter = adapter
+            binding.rvJsonKeeper.adapter = adapter
         })
     }
 }

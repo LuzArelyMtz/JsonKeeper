@@ -1,25 +1,26 @@
 package com.example.jsonkeeper.ui.adapter
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.example.jsonkeeper.R
 import com.example.jsonkeeper.api.model.JsonKeeperItem
+import com.example.jsonkeeper.databinding.JsonkeeperItemBinding
 
 class JsonKeeperAdapter(
     private val jsonKeeperList: ArrayList<JsonKeeperItem>
-) : RecyclerView.Adapter<MyViewModel>() {
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewModel =
-        MyViewModel(
-            LayoutInflater.from(parent.context).inflate(R.layout.jsonkeeper_item, parent, false)
+) : RecyclerView.Adapter<MyViewHolder>() {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder =
+        MyViewHolder(
+            JsonkeeperItemBinding.inflate(
+                LayoutInflater.from(parent.context),
+                parent,
+                false
+            )
         )
 
-    override fun onBindViewHolder(holder: MyViewModel, position: Int) {
-        holder.bindView(jsonKeeperList[position])
+    override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
+        holder.bind(jsonKeeperList[position])
     }
 
     override fun getItemCount() = jsonKeeperList.size
@@ -31,17 +32,13 @@ class JsonKeeperAdapter(
     }
 }
 
-class MyViewModel(itemView: View) : RecyclerView.ViewHolder(itemView.rootView) {
-    val tvTitle = itemView.findViewById<TextView>(R.id.tvTitle)
-    val tvDescription = itemView.findViewById<TextView>(R.id.tvDescription)
-    val tvDate = itemView.findViewById<TextView>(R.id.tvDate)
-    val image = itemView.findViewById<ImageView>(R.id.imgJsonKeeper)
+class MyViewHolder(private val binding: JsonkeeperItemBinding) : RecyclerView.ViewHolder(binding.root) {
 
-    fun bindView(data: JsonKeeperItem) {
-        tvTitle.text = data.title
-        tvDescription.text = data.description
-        tvDate.text = data.date
+    fun bind(data: JsonKeeperItem) {
+        binding.tvTitle.text = data.title
+        binding.tvDescription.text = data.description
+        binding.tvDate.text = data.date
 
-        Glide.with(itemView.context).load(data.img).into(image)
+        Glide.with(binding.root.context).load(data.img).into(binding.imgJsonKeeper)
     }
 }
