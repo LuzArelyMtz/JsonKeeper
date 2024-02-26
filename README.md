@@ -233,3 +233,52 @@ val gridfragmentBiding = GridviewFragmentBinding.inflate(inflater, container, fa
     tools:context=".ui.MainActivity" />
 
 ```
+
+
+### Nav Graph
+
+> Text that is a quote
+
+``` kotlin
+
+popStackBack()
+
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/navigation_main"
+    app:startDestination="@id/listFragment">
+
+    <fragment
+        android:id="@+id/listFragment"
+        android:name="com.luz.codingchallenge.ui.ListFragment"
+        android:label="list_fragment"
+        tools:layout="@layout/list_fragment" >
+        <action
+            android:id="@+id/action_listFragment_to_detailsFragment"
+            app:destination="@id/detailsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/detailsFragment"
+        android:name="com.luz.codingchallenge.ui.DetailsFragment"
+        android:label="detail_fragment"
+        tools:layout="@layout/detail_fragment" >
+        <argument
+            android:name="itemAPI"
+            app:argType="com.luz.codingchallenge.api.model.ItemAPI" />
+    </fragment>
+
+private val listAdapter = AdapterExample(arrayListOf()) { itemSelected ->
+        val action = ListFragmentDirections.actionListFragmentToDetailsFragment(itemSelected)
+        findNavController().navigate(action)
+    }
+
+
+class AdapterExample(
+    private val list: ArrayList<ItemAPI>,
+    private val itemSelectedListener: (ItemAPI) -> Unit
+)
+
+private val args: DetailsFragmentArgs by navArgs()
+```
