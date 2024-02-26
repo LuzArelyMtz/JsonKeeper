@@ -188,3 +188,48 @@ class MainActivity : AppCompatActivity() {
     }
 }
 ```
+
+### Fragment
+
+> Text that is a quote
+
+``` kotlin
+if (savedInstanceState == null) {
+            var transition = supportFragmentManager.beginTransaction()
+            transition.add(R.id.maincontainer, GridViewFragment.newInstance())
+                .addToBackStack(null)
+                .commit()
+        }
+ }
+
+
+ val fragment = DetailGiftFragment.newInstance()
+                requireActivity().supportFragmentManager
+                    /*.commit {
+                    replace<DetailGiftFragment>(R.id.maincontainer)
+                    addToBackStack("GridViewFragment")
+                }*/
+                    .beginTransaction()
+                    .replace(R.id.maincontainer, fragment)
+                    .addToBackStack("GridViewFragment")
+                    .commit()
+
+class DetailGiftFragment : Fragment() {
+    companion object {
+        @JvmStatic
+        fun newInstance() = DetailGiftFragment().apply {
+
+val gridfragmentBiding = GridviewFragmentBinding.inflate(inflater, container, false)
+        binding = gridfragmentBiding
+        return gridfragmentBiding.root
+
+
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/maincontainer"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.MainActivity" />
+
+```
