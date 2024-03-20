@@ -13,10 +13,16 @@ class JsonKeeperViewModel : ViewModel() {
 
     private var _livedataResponse = MutableLiveData<List<JsonKeeperItem>>()
     var livedataResponse: LiveData<List<JsonKeeperItem>> = _livedataResponse
+    private var _livedataJsonKeeperItem = MutableLiveData<JsonKeeperItem>()
+    var livedataJsonKeeperItem: LiveData<JsonKeeperItem> = _livedataJsonKeeperItem
 
     fun getJsonKeeper() {
         viewModelScope.launch(Dispatchers.IO) {
             _livedataResponse.postValue(JsonKeeperAPIImpl().getResponse().items)
         }
+    }
+
+    fun setJsonKeeperItem(data: JsonKeeperItem) {
+        _livedataJsonKeeperItem.value = data
     }
 }

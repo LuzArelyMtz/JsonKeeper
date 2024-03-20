@@ -11,7 +11,8 @@ import com.example.jsonkeeper.R
 import com.example.jsonkeeper.api.model.JsonKeeperItem
 
 class JsonKeeperAdapter(
-    private val jsonKeeperList: ArrayList<JsonKeeperItem>
+    private val jsonKeeperList: ArrayList<JsonKeeperItem>,
+    private val onItemClickListener: OnItemClickListener
 ) : RecyclerView.Adapter<MyViewModel>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewModel =
         MyViewModel(
@@ -19,7 +20,7 @@ class JsonKeeperAdapter(
         )
 
     override fun onBindViewHolder(holder: MyViewModel, position: Int) {
-        holder.bindView(jsonKeeperList[position])
+        holder.bindView(jsonKeeperList[position], onItemClickListener)
     }
 
     override fun getItemCount() = jsonKeeperList.size
@@ -37,11 +38,14 @@ class MyViewModel(itemView: View) : RecyclerView.ViewHolder(itemView.rootView) {
     val tvDate = itemView.findViewById<TextView>(R.id.tvDate)
     val image = itemView.findViewById<ImageView>(R.id.imgJsonKeeper)
 
-    fun bindView(data: JsonKeeperItem) {
+    fun bindView(data: JsonKeeperItem, listener: OnItemClickListener) {
         tvTitle.text = data.title
         tvDescription.text = data.description
         tvDate.text = data.date
 
         Glide.with(itemView.context).load(data.img).into(image)
+        itemView.setOnClickListener({
+            listener.onClick(itemView, data)
+        })
     }
 }
