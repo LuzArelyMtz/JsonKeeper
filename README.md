@@ -123,17 +123,21 @@ class JsonKeeperViewModel : ViewModel() {
 
 ``` kotlin
 
-class JsonKeeperAdapter(
+ class JsonKeeperAdapter(
     private val jsonKeeperList: ArrayList<JsonKeeperItem>,
     private val onItemClickListener: OnItemClickListener
-) : RecyclerView.Adapter<MyViewModel>() {
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewModel =
-        MyViewModel(
-            LayoutInflater.from(parent.context).inflate(R.layout.jsonkeeper_item, parent, false)
+) : RecyclerView.Adapter<MyViewHolder>() {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder =
+        MyViewHolder(
+            JsonkeeperItemBinding.inflate(
+                LayoutInflater.from(parent.context),
+                parent,
+                false
+            )
         )
 
-    override fun onBindViewHolder(holder: MyViewModel, position: Int) {
-        holder.bindView(jsonKeeperList[position], onItemClickListener)
+    override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
+        holder.bind(jsonKeeperList[position], onItemClickListener)
     }
 
     override fun getItemCount() = jsonKeeperList.size
@@ -145,18 +149,15 @@ class JsonKeeperAdapter(
     }
 }
 
-class MyViewModel(itemView: View) : RecyclerView.ViewHolder(itemView.rootView) {
-    val tvTitle = itemView.findViewById<TextView>(R.id.tvTitle)
-    val tvDescription = itemView.findViewById<TextView>(R.id.tvDescription)
-    val tvDate = itemView.findViewById<TextView>(R.id.tvDate)
-    val image = itemView.findViewById<ImageView>(R.id.imgJsonKeeper)
+class MyViewHolder(private val binding: JsonkeeperItemBinding) :
+    RecyclerView.ViewHolder(binding.root) {
 
-    fun bindView(data: JsonKeeperItem, listener: OnItemClickListener) {
-        tvTitle.text = data.title
-        tvDescription.text = data.description
-        tvDate.text = data.date
+    fun bind(data: JsonKeeperItem, listener: OnItemClickListener) {
+        binding.tvTitle.text = data.title
+        binding.tvDescription.text = data.description
+        binding.tvDate.text = data.date
 
-        Glide.with(itemView.context).load(data.img).into(image)
+        Glide.with(binding.root.context).load(data.img).into(binding.imgJsonKeeper)
         itemView.setOnClickListener({
             listener.onClick(itemView, data)
         })
@@ -235,22 +236,24 @@ interface OnItemClickListener {
 
 ``` kotlin
 class MainActivity : AppCompatActivity() {
+    private lateinit var binding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         val listFragment = ListFragment().apply {
             onClickListener = { selectedInfo ->
                 supportFragmentManager.beginTransaction()
-                    .replace(R.id.main_fragment_container, DetailsFragment())
+                    .replace(binding.mainFragmentContainer.id, DetailsFragment())
                     .addToBackStack(null)
                     .commit()
             }
         }
 
         supportFragmentManager.beginTransaction()
-            .replace(R.id.main_fragment_container, listFragment)
+            .replace(binding.mainFragmentContainer.id, listFragment)
             .commit()
     }
 }
@@ -343,32 +346,32 @@ class MainActivity : AppCompatActivity() {
         app:layout_constraintTop_toBottomOf="@+id/tvDate" />
 </androidx.constraintlayout.widget.ConstraintLayout>
 
-
 class ListFragment : Fragment() {
     var onClickListener: (JsonKeeperItem) -> Unit = {}
+
+    private lateinit var binding: ListFragmentBinding
+    private lateinit var adapter: JsonKeeperAdapter
     private val sharedViewModel: JsonKeeperViewModel by activityViewModels()
 
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
+        inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.list_fragment, container, false)
+    ): View {
+        binding = ListFragmentBinding.inflate(layoutInflater)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val rvJsonKeeper = view.findViewById<RecyclerView>(R.id.rvJsonKeeper)
-        rvJsonKeeper?.layoutManager = LinearLayoutManager(context)
-
-        val adapter = JsonKeeperAdapter(arrayListOf(), object : OnItemClickListener {
+        binding.rvJsonKeeper.layoutManager = LinearLayoutManager(context)
+        adapter = JsonKeeperAdapter(arrayListOf(), object : OnItemClickListener {
             override fun onClick(v: View?, data: JsonKeeperItem) {
                 sharedViewModel.setJsonKeeperItem(data)
                 onClickListener(data)
             }
         })
-        rvJsonKeeper.adapter = adapter
+        binding.rvJsonKeeper.adapter = adapter
 
         sharedViewModel.getJsonKeeper()
 
@@ -379,8 +382,10 @@ class ListFragment : Fragment() {
 }
 
 
-class DetailsFragment: Fragment() {
+class DetailsFragment : Fragment() {
+
     private val sharedViewModel: JsonKeeperViewModel by activityViewModels()
+    private lateinit var binding: DetailsFragmentBinding
     private lateinit var context: Context
 
     override fun onAttach(context: Context) {
@@ -393,21 +398,18 @@ class DetailsFragment: Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.details_fragment, container, false)
+        binding = DetailsFragmentBinding.inflate(layoutInflater)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val tvTitle = view.findViewById<TextView>(R.id.tvTitle)
-        val tvDescription = view.findViewById<TextView>(R.id.tvDescription)
-        val tvDate = view.findViewById<TextView>(R.id.tvDate)
-        val image = view.findViewById<ImageView>(R.id.image)
 
         sharedViewModel.livedataJsonKeeperItem.observe(requireActivity(), Observer {
-            tvTitle.text = it.title
-            tvDescription.text = it.description
-            tvDate.text = it.date
-            Glide.with(context).load(it.img).into(image)
+            binding.tvDescription.text = it.title
+            binding.tvDescription.text = it.description
+            binding.tvDate.text = it.date
+            Glide.with(context).load(it.img).into(binding.image)
         })
     }
 }
