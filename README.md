@@ -6,11 +6,27 @@
 <uses-permission android:name="android.permission.INTERNET"/>
 ```
 
-### Gradle dependencies
+### Gradle Project top level
 
 > Text that is a quote
 
 ``` gradle
+
+plugins {
+    id("androidx.navigation.safeargs.kotlin") version "2.7.1" apply false
+}
+```
+
+### Gradle app dependencies
+
+> Text that is a quote
+
+``` gradle
+
+plugins {
+    id ("androidx.navigation.safeargs.kotlin")
+}
+
 implementation("com.squareup.retrofit2:retrofit:2.9.0")
 implementation("com.squareup.retrofit2:converter-gson:2.9.0")
 implementation ("androidx.lifecycle:lifecycle-viewmodel-ktx:2.2.0")
@@ -242,19 +258,6 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-        val listFragment = ListFragment().apply {
-            onClickListener = { selectedInfo ->
-                supportFragmentManager.beginTransaction()
-                    .replace(binding.mainFragmentContainer.id, DetailsFragment())
-                    .addToBackStack(null)
-                    .commit()
-            }
-        }
-
-        supportFragmentManager.beginTransaction()
-            .replace(binding.mainFragmentContainer.id, listFragment)
-            .commit()
     }
 }
 
@@ -268,15 +271,50 @@ class MainActivity : AppCompatActivity() {
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/main_fragment_container"
+        android:name="androidx.navigation.fragment.NavHostFragment"
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:navGraph="@navigation/nav_main"
+        app:defaultNavHost="true"/>
 </androidx.constraintlayout.widget.ConstraintLayout>
 
 ```
+
+### Nav Graph
+
+> Add the Nav Graph xml clicking on Android resource Directory and source type navigation. Then Resource Manager  and +
+
+``` kotlin
+
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_main"
+    app:startDestination="@id/listFragment">
+
+    <fragment
+        android:id="@+id/listFragment"
+        android:name="com.example.jsonkeeper.ui.ListFragment"
+        android:label="ListFragment"
+        tools:layout="@layout/list_fragment">
+        <action
+            android:id="@+id/action_listFragment_to_detailsFragment"
+            app:destination="@id/detailsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/detailsFragment"
+        android:name="com.example.jsonkeeper.ui.DetailsFragment"
+        android:label="DetailsFragment"
+        tools:layout="@layout/details_fragment"/>
+</navigation>
+
+```
+
 
 ### Fragment
 
@@ -347,8 +385,6 @@ class MainActivity : AppCompatActivity() {
 </androidx.constraintlayout.widget.ConstraintLayout>
 
 class ListFragment : Fragment() {
-    var onClickListener: (JsonKeeperItem) -> Unit = {}
-
     private lateinit var binding: ListFragmentBinding
     private lateinit var adapter: JsonKeeperAdapter
     private val sharedViewModel: JsonKeeperViewModel by activityViewModels()
@@ -368,7 +404,10 @@ class ListFragment : Fragment() {
         adapter = JsonKeeperAdapter(arrayListOf(), object : OnItemClickListener {
             override fun onClick(v: View?, data: JsonKeeperItem) {
                 sharedViewModel.setJsonKeeperItem(data)
-                onClickListener(data)
+
+                val action = ListFragmentDirections.actionListFragmentToDetailsFragment()
+                findNavController().navigate(action)
+
             }
         })
         binding.rvJsonKeeper.adapter = adapter
