@@ -6,17 +6,18 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.Observer
+import androidx.navigation.fragment.navArgs
 import com.bumptech.glide.Glide
+import com.example.jsonkeeper.api.model.JsonKeeperItem
 import com.example.jsonkeeper.databinding.DetailsFragmentBinding
-import com.example.jsonkeeper.viewmodel.JsonKeeperViewModel
 
 class DetailsFragment : Fragment() {
 
-    private val sharedViewModel: JsonKeeperViewModel by activityViewModels()
+    //private val sharedViewModel: JsonKeeperViewModel by activityViewModels()
     private lateinit var binding: DetailsFragmentBinding
     private lateinit var context: Context
+    private val args: DetailsFragmentArgs by navArgs()
+    private lateinit var jsonKeeperItem:JsonKeeperItem
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -35,11 +36,13 @@ class DetailsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        sharedViewModel.livedataJsonKeeperItem.observe(requireActivity(), Observer {
-            binding.tvDescription.text = it.title
-            binding.tvDescription.text = it.description
-            binding.tvDate.text = it.date
-            Glide.with(context).load(it.img).into(binding.image)
-        })
+        jsonKeeperItem = args.jsonKeeperItem
+
+        //sharedViewModel.livedataJsonKeeperItem.observe(requireActivity(), Observer {
+            binding.tvDescription.text = jsonKeeperItem.title
+            binding.tvDescription.text = jsonKeeperItem.description
+            binding.tvDate.text = jsonKeeperItem.date
+            Glide.with(context).load(jsonKeeperItem.img).into(binding.image)
+       // })
     }
 }

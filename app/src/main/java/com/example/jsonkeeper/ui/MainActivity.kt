@@ -11,18 +11,5 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-        val listFragment = ListFragment().apply {
-            onClickListener = { selectedInfo ->
-                supportFragmentManager.beginTransaction()
-                    .replace(binding.mainFragmentContainer.id, DetailsFragment())
-                    .addToBackStack(null)
-                    .commit()
-            }
-        }
-
-        supportFragmentManager.beginTransaction()
-            .replace(binding.mainFragmentContainer.id, listFragment)
-            .commit()
     }
 }
