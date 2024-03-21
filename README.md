@@ -6,35 +6,19 @@
 <uses-permission android:name="android.permission.INTERNET"/>
 ```
 
-### Gradle Project top level
+### Gradle dependencies
 
 > Text that is a quote
 
 ``` gradle
 
-plugins {
-    id("androidx.navigation.safeargs.kotlin") version "2.7.1" apply false
-}
-```
-
-### Gradle app dependencies
-
-> Text that is a quote
-
-``` gradle
-
-plugins {
-    id ("androidx.navigation.safeargs.kotlin")
+viewBinding{
+        enable =true
 }
 
 implementation("com.squareup.retrofit2:retrofit:2.9.0")
 implementation("com.squareup.retrofit2:converter-gson:2.9.0")
 implementation ("androidx.lifecycle:lifecycle-viewmodel-ktx:2.2.0")
-implementation ("androidx.fragment:fragment-ktx:1.5.4")
-
-implementation("androidx.navigation:navigation-dynamic-features-fragment:2.7.7")
-implementation("androidx.navigation:navigation-fragment-ktx:2.7.7")
-implementation("androidx.navigation:navigation-ui-ktx:2.7.7")
 ```
 
 ### Data classes
@@ -123,17 +107,10 @@ class JsonKeeperViewModel : ViewModel() {
     private var _livedataResponse = MutableLiveData<List<JsonKeeperItem>>()
     var livedataResponse: LiveData<List<JsonKeeperItem>> = _livedataResponse
 
-    private var _livedataJsonKeeperItem = MutableLiveData<JsonKeeperItem>()
-    var livedataJsonKeeperItem: LiveData<JsonKeeperItem> = _livedataJsonKeeperItem
-
     fun getJsonKeeper() {
         viewModelScope.launch(Dispatchers.IO) {
             _livedataResponse.postValue(JsonKeeperAPIImpl().getResponse().items)
         }
-    }
-
-    fun setJsonKeeperItem(data: JsonKeeperItem) {
-        _livedataJsonKeeperItem.value = data
     }
 }
 ```
@@ -142,10 +119,8 @@ class JsonKeeperViewModel : ViewModel() {
 > Text that is a quote
 
 ``` kotlin
-
- class JsonKeeperAdapter(
-    private val jsonKeeperList: ArrayList<JsonKeeperItem>,
-    private val onItemClickListener: OnItemClickListener
+class JsonKeeperAdapter(
+    private val jsonKeeperList: ArrayList<JsonKeeperItem>
 ) : RecyclerView.Adapter<MyViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder =
         MyViewHolder(
@@ -157,7 +132,7 @@ class JsonKeeperViewModel : ViewModel() {
         )
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-        holder.bind(jsonKeeperList[position], onItemClickListener)
+        holder.bind(jsonKeeperList[position])
     }
 
     override fun getItemCount() = jsonKeeperList.size
@@ -169,291 +144,141 @@ class JsonKeeperViewModel : ViewModel() {
     }
 }
 
-class MyViewHolder(private val binding: JsonkeeperItemBinding) :
-    RecyclerView.ViewHolder(binding.root) {
+class MyViewHolder(private val binding: JsonkeeperItemBinding) : RecyclerView.ViewHolder(binding.root) {
 
-    fun bind(data: JsonKeeperItem, listener: OnItemClickListener) {
+    fun bind(data: JsonKeeperItem) {
         binding.tvTitle.text = data.title
         binding.tvDescription.text = data.description
         binding.tvDate.text = data.date
 
         Glide.with(binding.root.context).load(data.img).into(binding.imgJsonKeeper)
-        itemView.setOnClickListener({
-            listener.onClick(itemView, data)
-        })
     }
 }
-
-interface OnItemClickListener {
-    fun onClick(v: View?, jsonKeeperItem: JsonKeeperItem)
-}
-
-<?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:card_view="http://schemas.android.com/apk/res-auto"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/jsonkeeper_item"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content">
-
-    <com.google.android.material.card.MaterialCardView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="8dp"
-        card_view:cardCornerRadius="0dp"
-        card_view:cardElevation="2dp"
-        tools:ignore="MissingConstraints">
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="10dp">
-
-            <TextView
-                android:id="@+id/tvTitle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Title"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toTopOf="@+id/tvDescription"/>
-
-            <TextView
-                android:id="@+id/tvDescription"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Description"
-                app:layout_constraintTop_toBottomOf="@+id/tvTitle"
-                app:layout_constraintBottom_toTopOf="@+id/tvDate" />
-
-            <TextView
-                android:id="@+id/tvDate"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Date"
-                app:layout_constraintTop_toBottomOf="@+id/tvDescription"
-                app:layout_constraintBottom_toTopOf="@+id/imgJsonKeeper"/>
-
-            <ImageView
-                android:id="@+id/imgJsonKeeper"
-                android:layout_width="200dp"
-                android:layout_height="200dp"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tvDate"
-                app:layout_constraintBottom_toBottomOf="parent" />
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-    </com.google.android.material.card.MaterialCardView>
-
-</androidx.constraintlayout.widget.ConstraintLayout>
 ```
 
-### MainActivity
+### Coroutines
 
 > Text that is a quote
 
 ``` kotlin
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
+    private lateinit var viewModel: JsonKeeperViewModel
+
+    private var adapter = JsonKeeperAdapter(arrayListOf())
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        binding.rvJsonKeeper.apply {
+            layoutManager = LinearLayoutManager(context)
+            adapter = adapter
+        }
+
+        viewModel = ViewModelProvider(this)[JsonKeeperViewModel::class.java]
+        viewModel.getJsonKeeper()
+
+        viewModel.livedataResponse.observe(this, Observer { jsonKeeperList ->
+            //adapter= JsonKeeperAdapter(arrayListOf(jsonKeeperList.))
+            adapter.setNewList(jsonKeeperList)
+            binding.rvJsonKeeper.adapter = adapter
+        })
     }
 }
-
-<?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".ui.MainActivity">
-
-    <androidx.fragment.app.FragmentContainerView
-        android:id="@+id/main_fragment_container"
-        android:name="androidx.navigation.fragment.NavHostFragment"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:navGraph="@navigation/nav_main"
-        app:defaultNavHost="true"/>
-</androidx.constraintlayout.widget.ConstraintLayout>
-
 ```
-
-### Nav Graph
-
-> Add the Nav Graph xml clicking on Android resource Directory and source type navigation. Then Resource Manager  and +
-
-``` kotlin
-
-<?xml version="1.0" encoding="utf-8"?>
-<navigation xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/nav_main"
-    app:startDestination="@id/listFragment">
-
-    <fragment
-        android:id="@+id/listFragment"
-        android:name="com.example.jsonkeeper.ui.ListFragment"
-        android:label="ListFragment"
-        tools:layout="@layout/list_fragment">
-        <action
-            android:id="@+id/action_listFragment_to_detailsFragment"
-            app:destination="@id/detailsFragment" />
-    </fragment>
-    <fragment
-        android:id="@+id/detailsFragment"
-        android:name="com.example.jsonkeeper.ui.DetailsFragment"
-        android:label="DetailsFragment"
-        tools:layout="@layout/details_fragment"/>
-</navigation>
-
-```
-
 
 ### Fragment
 
 > Text that is a quote
 
 ``` kotlin
+if (savedInstanceState == null) {
+            var transition = supportFragmentManager.beginTransaction()
+            transition.add(R.id.maincontainer, GridViewFragment.newInstance())
+                .addToBackStack(null)
+                .commit()
+        }
+ }
+
+
+ val fragment = DetailGiftFragment.newInstance()
+                requireActivity().supportFragmentManager
+                    /*.commit {
+                    replace<DetailGiftFragment>(R.id.maincontainer)
+                    addToBackStack("GridViewFragment")
+                }*/
+                    .beginTransaction()
+                    .replace(R.id.maincontainer, fragment)
+                    .addToBackStack("GridViewFragment")
+                    .commit()
+
+class DetailGiftFragment : Fragment() {
+    companion object {
+        @JvmStatic
+        fun newInstance() = DetailGiftFragment().apply {
+
+val gridfragmentBiding = GridviewFragmentBinding.inflate(inflater, container, false)
+        binding = gridfragmentBiding
+        return gridfragmentBiding.root
+
 
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rvJsonKeeper"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-</androidx.constraintlayout.widget.ConstraintLayout>
-
-
-
-
-<?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/maincontainer"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="18dp">
+    tools:context=".ui.MainActivity" />
 
-    <TextView
-        android:id="@+id/tvTitle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Title"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+```
 
-    <TextView
-        android:id="@+id/tvDescription"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Description"
-        app:layout_constraintBottom_toTopOf="@+id/tvDate"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvTitle" />
 
-    <TextView
-        android:id="@+id/tvDate"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Date"
-        app:layout_constraintBottom_toTopOf="@+id/image"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvDescription" />
+### Nav Graph
 
-    <ImageView
-        android:id="@+id/image"
-        android:layout_width="200dp"
-        android:layout_height="200dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvDate" />
-</androidx.constraintlayout.widget.ConstraintLayout>
+> Text that is a quote
 
-class ListFragment : Fragment() {
-    private lateinit var binding: ListFragmentBinding
-    private lateinit var adapter: JsonKeeperAdapter
-    private val sharedViewModel: JsonKeeperViewModel by activityViewModels()
+``` kotlin
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        binding = ListFragmentBinding.inflate(layoutInflater)
-        return binding.root
+popStackBack()
+
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/navigation_main"
+    app:startDestination="@id/listFragment">
+
+    <fragment
+        android:id="@+id/listFragment"
+        android:name="com.luz.codingchallenge.ui.ListFragment"
+        android:label="list_fragment"
+        tools:layout="@layout/list_fragment" >
+        <action
+            android:id="@+id/action_listFragment_to_detailsFragment"
+            app:destination="@id/detailsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/detailsFragment"
+        android:name="com.luz.codingchallenge.ui.DetailsFragment"
+        android:label="detail_fragment"
+        tools:layout="@layout/detail_fragment" >
+        <argument
+            android:name="itemAPI"
+            app:argType="com.luz.codingchallenge.api.model.ItemAPI" />
+    </fragment>
+
+private val listAdapter = AdapterExample(arrayListOf()) { itemSelected ->
+        val action = ListFragmentDirections.actionListFragmentToDetailsFragment(itemSelected)
+        findNavController().navigate(action)
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
 
-        binding.rvJsonKeeper.layoutManager = LinearLayoutManager(context)
-        adapter = JsonKeeperAdapter(arrayListOf(), object : OnItemClickListener {
-            override fun onClick(v: View?, data: JsonKeeperItem) {
-                sharedViewModel.setJsonKeeperItem(data)
+class AdapterExample(
+    private val list: ArrayList<ItemAPI>,
+    private val itemSelectedListener: (ItemAPI) -> Unit
+)
 
-                val action = ListFragmentDirections.actionListFragmentToDetailsFragment()
-                findNavController().navigate(action)
-
-            }
-        })
-        binding.rvJsonKeeper.adapter = adapter
-
-        sharedViewModel.getJsonKeeper()
-
-        sharedViewModel.livedataResponse.observe(requireActivity(), Observer { jsonKeeperList ->
-            adapter.setNewList(jsonKeeperList)
-        })
-    }
-}
-
-
-class DetailsFragment : Fragment() {
-
-    private val sharedViewModel: JsonKeeperViewModel by activityViewModels()
-    private lateinit var binding: DetailsFragmentBinding
-    private lateinit var context: Context
-
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        this.context = context
-    }
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        binding = DetailsFragmentBinding.inflate(layoutInflater)
-        return binding.root
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        sharedViewModel.livedataJsonKeeperItem.observe(requireActivity(), Observer {
-            binding.tvDescription.text = it.title
-            binding.tvDescription.text = it.description
-            binding.tvDate.text = it.date
-            Glide.with(context).load(it.img).into(binding.image)
-        })
-    }
-}
+private val args: DetailsFragmentArgs by navArgs()
 ```
