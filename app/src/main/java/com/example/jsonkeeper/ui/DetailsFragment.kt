@@ -37,7 +37,6 @@ class DetailsFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         jsonKeeperItem = args.jsonKeeperItem
-
         //sharedViewModel.livedataJsonKeeperItem.observe(requireActivity(), Observer {
             binding.tvDescription.text = jsonKeeperItem.title
             binding.tvDescription.text = jsonKeeperItem.description

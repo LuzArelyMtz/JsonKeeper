@@ -36,7 +36,7 @@ class ListFragment : Fragment() {
             .get(JsonKeeperViewModel::class.java)
 
         binding.rvJsonKeeper.layoutManager = LinearLayoutManager(context)
-        adapter = JsonKeeperAdapter(arrayListOf(), object : OnItemClickListener {
+        adapter = JsonKeeperAdapter(object : OnItemClickListener {
             override fun onClick(v: View?, data: JsonKeeperItem) {
                 viewmodel.setJsonKeeperItem(data)
 
@@ -50,7 +50,7 @@ class ListFragment : Fragment() {
         viewmodel.getJsonKeeper()
 
         viewmodel.livedataResponse.observe(requireActivity(), Observer { jsonKeeperList ->
-            adapter.setNewList(jsonKeeperList)
+            adapter.submitList(jsonKeeperList)
         })
     }
 }

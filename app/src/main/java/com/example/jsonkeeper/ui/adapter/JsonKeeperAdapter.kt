@@ -2,15 +2,16 @@ package com.example.jsonkeeper.ui.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.jsonkeeper.api.model.JsonKeeperItem
 import com.example.jsonkeeper.databinding.JsonkeeperItemBinding
 
 class JsonKeeperAdapter(
-    private val jsonKeeperList: ArrayList<JsonKeeperItem>,
     private val onItemClickListener: OnItemClickListener
-) : RecyclerView.Adapter<MyViewHolder>() {
+) : ListAdapter<JsonKeeperItem, RecyclerView.ViewHolder>(ListDiffCallback()) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder =
         MyViewHolder(
             JsonkeeperItemBinding.inflate(
@@ -20,17 +21,10 @@ class JsonKeeperAdapter(
             )
         )
 
-    override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-        holder.bind(jsonKeeperList[position], onItemClickListener)
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        (holder as MyViewHolder).bind(getItem(position), onItemClickListener)
     }
 
-    override fun getItemCount() = jsonKeeperList.size
-
-    fun setNewList(newList: List<JsonKeeperItem>) {
-        jsonKeeperList.clear()
-        jsonKeeperList.addAll(newList)
-        notifyDataSetChanged()
-    }
 }
 
 class MyViewHolder(private val binding: JsonkeeperItemBinding) :
@@ -46,4 +40,11 @@ class MyViewHolder(private val binding: JsonkeeperItemBinding) :
             listener.onClick(itemView, data)
         })
     }
+}
+
+class ListDiffCallback : DiffUtil.ItemCallback<JsonKeeperItem>() {
+    override fun areItemsTheSame(oldItem: JsonKeeperItem, newItem: JsonKeeperItem) =
+        oldItem.title == newItem.title
+
+    override fun areContentsTheSame(oldItem: JsonKeeperItem, newItem: JsonKeeperItem) = oldItem == newItem
 }
