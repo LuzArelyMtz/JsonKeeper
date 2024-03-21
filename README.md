@@ -31,6 +31,10 @@ implementation("com.squareup.retrofit2:retrofit:2.9.0")
 implementation("com.squareup.retrofit2:converter-gson:2.9.0")
 implementation ("androidx.lifecycle:lifecycle-viewmodel-ktx:2.2.0")
 implementation ("androidx.fragment:fragment-ktx:1.5.4")
+
+implementation("androidx.navigation:navigation-dynamic-features-fragment:2.7.7")
+implementation("androidx.navigation:navigation-fragment-ktx:2.7.7")
+implementation("androidx.navigation:navigation-ui-ktx:2.7.7")
 ```
 
 ### Data classes
