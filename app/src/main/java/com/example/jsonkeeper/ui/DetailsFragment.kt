@@ -17,7 +17,7 @@ class DetailsFragment : Fragment() {
     private lateinit var binding: DetailsFragmentBinding
     private lateinit var context: Context
     private val args: DetailsFragmentArgs by navArgs()
-    private lateinit var jsonKeeperItem:JsonKeeperItem
+    private lateinit var jsonKeeperItem: JsonKeeperItem
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -37,11 +37,9 @@ class DetailsFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         jsonKeeperItem = args.jsonKeeperItem
-        //sharedViewModel.livedataJsonKeeperItem.observe(requireActivity(), Observer {
-            binding.tvDescription.text = jsonKeeperItem.title
-            binding.tvDescription.text = jsonKeeperItem.description
-            binding.tvDate.text = jsonKeeperItem.date
-            Glide.with(context).load(jsonKeeperItem.img).into(binding.image)
-       // })
+        binding.tvDescription.text = jsonKeeperItem.title
+        binding.tvDescription.text = jsonKeeperItem.description
+        binding.tvDate.text = jsonKeeperItem.date
+        Glide.with(context).load(jsonKeeperItem.img).into(binding.image)
     }
 }

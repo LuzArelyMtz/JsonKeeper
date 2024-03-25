@@ -1,29 +1,38 @@
 package com.example.jsonkeeper.api
 
+import dagger.Module
+import dagger.Provides
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.security.SecureRandom
+import javax.inject.Singleton
 import javax.net.ssl.SSLContext
 import javax.net.ssl.TrustManager
 import javax.net.ssl.X509TrustManager
 import javax.security.cert.CertificateException
 import org.apache.http.conn.ssl.SSLSocketFactory as SSLSocketFactoryApache
 import javax.net.ssl.SSLSocketFactory as SSLSocketFactoryJavax
-import org.apache.http.conn.ssl.SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER
 
-class JsonKeeperAPIImpl {
+@Module
+class JsonKeeperAPIModule {
     private val BASE_URL = "https://jsonkeeper.com"
 
-    suspend fun getResponse() = provideRetrofit().create(IJsonKeeperAPIClient::class.java).getResponse()
+    @Provides
+    fun provideIJsonKeeperAPIClient(retrofit: Retrofit): IJsonKeeperAPIClient {
+        return retrofit.create(IJsonKeeperAPIClient::class.java)
+    }
 
-    private fun provideRetrofit() = Retrofit.Builder()
+    @Provides
+    fun provideRetrofit(client: OkHttpClient) = Retrofit.Builder()
         .baseUrl(BASE_URL)
-        .client(getUnsafeOkHttpClient())
+        .client(client)
         .addConverterFactory(GsonConverterFactory.create())
         .build()
 
-    private fun getUnsafeOkHttpClient(): OkHttpClient? {
+    @Singleton
+    @Provides
+    fun provideClient(): OkHttpClient {
         return try {
             val trustAllCerts = arrayOf<TrustManager>(object : X509TrustManager {
                 @Throws(CertificateException::class)
