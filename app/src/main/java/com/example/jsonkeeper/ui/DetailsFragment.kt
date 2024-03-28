@@ -10,10 +10,11 @@ import androidx.navigation.fragment.navArgs
 import com.bumptech.glide.Glide
 import com.example.jsonkeeper.api.model.JsonKeeperItem
 import com.example.jsonkeeper.databinding.DetailsFragmentBinding
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class DetailsFragment : Fragment() {
 
-    //private val sharedViewModel: JsonKeeperViewModel by activityViewModels()
     private lateinit var binding: DetailsFragmentBinding
     private lateinit var context: Context
     private val args: DetailsFragmentArgs by navArgs()

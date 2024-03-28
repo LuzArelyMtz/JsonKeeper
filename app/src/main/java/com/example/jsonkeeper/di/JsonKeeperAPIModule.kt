@@ -1,12 +1,14 @@
-package com.example.jsonkeeper.api
+package com.example.jsonkeeper.di
 
+import com.example.jsonkeeper.api.IJsonKeeperAPIClient
 import dagger.Module
 import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.android.components.ActivityComponent
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.security.SecureRandom
-import javax.inject.Singleton
 import javax.net.ssl.SSLContext
 import javax.net.ssl.TrustManager
 import javax.net.ssl.X509TrustManager
@@ -15,8 +17,9 @@ import org.apache.http.conn.ssl.SSLSocketFactory as SSLSocketFactoryApache
 import javax.net.ssl.SSLSocketFactory as SSLSocketFactoryJavax
 
 @Module
+@InstallIn(ActivityComponent::class)
 class JsonKeeperAPIModule {
-    private val BASE_URL = "https://jsonkeeper.com"
+    private val baseUrl = "https://jsonkeeper.com"
 
     @Provides
     fun provideIJsonKeeperAPIClient(retrofit: Retrofit): IJsonKeeperAPIClient {
@@ -25,12 +28,11 @@ class JsonKeeperAPIModule {
 
     @Provides
     fun provideRetrofit(client: OkHttpClient) = Retrofit.Builder()
-        .baseUrl(BASE_URL)
+        .baseUrl(baseUrl)
         .client(client)
         .addConverterFactory(GsonConverterFactory.create())
         .build()
 
-    @Singleton
     @Provides
     fun provideClient(): OkHttpClient {
         return try {
@@ -60,7 +62,7 @@ class JsonKeeperAPIModule {
                 SecureRandom()
             )
             val sslSocketFactory: SSLSocketFactoryJavax = sslContext
-                .getSocketFactory()
+                .socketFactory
             var okHttpClient = OkHttpClient()
             okHttpClient = okHttpClient.newBuilder()
                 .sslSocketFactory(sslSocketFactory)

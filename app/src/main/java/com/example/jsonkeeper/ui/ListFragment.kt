@@ -10,21 +10,21 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.jsonkeeper.MyApplication
 import com.example.jsonkeeper.api.model.JsonKeeperItem
 import com.example.jsonkeeper.databinding.ListFragmentBinding
 import com.example.jsonkeeper.di.ViewModelFactory
 import com.example.jsonkeeper.ui.adapter.JsonKeeperAdapter
 import com.example.jsonkeeper.ui.adapter.OnItemClickListener
 import com.example.jsonkeeper.viewmodel.JsonKeeperViewModel
+import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
+@AndroidEntryPoint
 class ListFragment : Fragment() {
     private lateinit var binding: ListFragmentBinding
     private lateinit var adapter: JsonKeeperAdapter
     private lateinit var context: Context
 
-    //private val sharedViewModel: JsonKeeperViewModel by activityViewModels()
     @Inject
     lateinit var viewModelFactory: ViewModelFactory
 
@@ -35,9 +35,6 @@ class ListFragment : Fragment() {
     override fun onAttach(context: Context) {
         super.onAttach(context)
         this.context = context
-
-        (context.applicationContext as MyApplication).appComponent.inject(this)
-
     }
 
     override fun onCreateView(
