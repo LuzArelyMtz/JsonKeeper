@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.jsonkeeper.api.JsonKeeperAPIImpl
 import com.example.jsonkeeper.api.model.JsonKeeperItem
+import com.example.jsonkeeper.api.repository.RepositoryImpl
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
@@ -16,9 +17,15 @@ class JsonKeeperViewModel : ViewModel() {
     private var _livedataJsonKeeperItem = MutableLiveData<JsonKeeperItem>()
     var livedataJsonKeeperItem: LiveData<JsonKeeperItem> = _livedataJsonKeeperItem
 
+    val repositoryImpl = RepositoryImpl(JsonKeeperAPIImpl())
+
     fun getJsonKeeper() {
         viewModelScope.launch(Dispatchers.IO) {
-            _livedataResponse.postValue(JsonKeeperAPIImpl().getResponse().items)
+            repositoryImpl.getJsonKeeperList().collect { result ->
+                result.onSuccess { list ->
+                    _livedataResponse.postValue(list)
+                }
+            }
         }
     }
 
