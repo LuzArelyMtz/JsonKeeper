@@ -17,7 +17,11 @@ class JsonKeeperViewModel @Inject constructor(private val repository: IRepositor
 
     fun getJsonKeeper() {
         viewModelScope.launch(Dispatchers.IO) {
-            _livedataResponse.postValue(repository.getJsonKeeperList())
+            repository.getJsonKeeperList().collect { result ->
+                result.onSuccess { list ->
+                    _livedataResponse.postValue(list)
+                }
+            }
         }
     }
 }
