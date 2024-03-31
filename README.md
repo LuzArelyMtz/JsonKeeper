@@ -1,3 +1,50 @@
+### Repository
+
+> Text that is a quote
+
+``` kotlin
+interface IRepository {
+    suspend fun getJsonKeeperList(): Flow<Result<List<JsonKeeperItem>>>
+}
+
+
+
+class RepositoryImpl @Inject constructor(private val JsonKeeperAPI: IJsonKeeperAPIClient) :
+    IRepository {
+    override suspend fun getJsonKeeperList(): Flow<Result<List<JsonKeeperItem>>> {
+        val list = JsonKeeperAPI.getResponse().items
+        return flow {
+            emit(Result.success(list))
+        }
+    }
+}
+
+```
+
+### ViewModel
+
+> Text that is a quote
+
+``` kotlin
+class JsonKeeperViewModel @Inject constructor(private val repository: IRepository) : ViewModel() {
+
+    private var _livedataResponse = MutableLiveData<List<JsonKeeperItem>>()
+    var livedataResponse: LiveData<List<JsonKeeperItem>> = _livedataResponse
+
+
+    fun getJsonKeeper() {
+        viewModelScope.launch(Dispatchers.IO) {
+            repository.getJsonKeeperList().collect { result ->
+                result.onSuccess { list ->
+                    _livedataResponse.postValue(list)
+                }
+            }
+        }
+    }
+}
+```
+
+
 
 ### Android Manifest
 
