@@ -26,7 +26,7 @@ implementation("com.google.dagger:dagger:2.51")
 > Text that is a quote
 
 ``` kotlin
-lass MyApplication : Application() {
+class MyApplication : Application() {
     lateinit var appComponent: ApplicationComponent
 
     private fun initDagger(application: MyApplication): ApplicationComponent =
