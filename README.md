@@ -20,6 +20,25 @@ class RepositoryImpl @Inject constructor(private val JsonKeeperAPI: IJsonKeeperA
 }
 
 ```
+### Repository
+
+> Text that is a quote
+
+``` kotlin
+interface IRepository {
+    suspend fun getJsonKeeperList(): List<JsonKeeperItem>
+}
+
+@Module
+@InstallIn(ActivityComponent::class)
+abstract class RepositoryModule {
+
+    @Binds
+    abstract fun  bindRepositoryImpl(impl : RepositoryImpl): IRepository
+}
+```
+
+
 
 ### ViewModel
 
@@ -148,25 +167,6 @@ class JsonKeeperAPIModule {
             throw RuntimeException(e)
         }
     }
-}
-
-
-```
-### Repository
-
-> Text that is a quote
-
-``` kotlin
-interface IRepository {
-    suspend fun getJsonKeeperList(): List<JsonKeeperItem>
-}
-
-@Module
-@InstallIn(ActivityComponent::class)
-abstract class RepositoryModule {
-
-    @Binds
-    abstract fun  bindRepositoryImpl(impl : RepositoryImpl): IRepository
 }
 ```
 
