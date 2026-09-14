@@ -20,14 +20,11 @@ class RepositoryImpl @Inject constructor(private val JsonKeeperAPI: IJsonKeeperA
 }
 
 ```
-### Repository
+### RepositoryModule
 
 > Text that is a quote
 
 ``` kotlin
-interface IRepository {
-    suspend fun getJsonKeeperList(): List<JsonKeeperItem>
-}
 
 @Module
 @InstallIn(ActivityComponent::class)
