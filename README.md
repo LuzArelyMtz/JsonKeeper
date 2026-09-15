@@ -19,23 +19,6 @@ class RepositoryImpl @Inject constructor(private val JsonKeeperAPI: IJsonKeeperA
     }
 }
 
-```
-### RepositoryModule
-
-> Text that is a quote
-
-``` kotlin
-
-@Module
-@InstallIn(ActivityComponent::class)
-abstract class RepositoryModule {
-
-    @Binds
-    abstract fun  bindRepositoryImpl(impl : RepositoryImpl): IRepository
-}
-```
-
-
 
 ### ViewModel
 
@@ -100,6 +83,24 @@ kapt("com.google.dagger:hilt-android-compiler:2.51")
 @HiltAndroidApp
 class MyApplication : Application()
 ```
+
+```
+### RepositoryModule
+
+> Text that is a quote
+
+``` kotlin
+
+@Module
+@InstallIn(ActivityComponent::class)
+abstract class RepositoryModule {
+
+    @Binds
+    abstract fun  bindRepositoryImpl(impl : RepositoryImpl): IRepository
+}
+```
+
+
 
 
 ### API Module
