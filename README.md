@@ -17,8 +17,8 @@ plugins {
     id ("kotlin-kapt")
 }
 
-implementation("com.google.dagger:dagger:2.51")
-    kapt("com.google.dagger:dagger-compiler:2.51")
+implementation("com.google.dagger:dagger:2.60")
+    kapt("com.google.dagger:dagger-compiler:2.60")
 ```
 
 ### MyApplication
