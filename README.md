@@ -58,7 +58,7 @@ class JsonKeeperViewModel @Inject constructor(private val repository: IRepositor
 > Text that is a quote
 
 ``` gradle
-id("com.google.dagger.hilt.android") version "2.51" apply false
+id("com.google.dagger.hilt.android") version "2.60" apply false
 ```
 
 ### Gradle App
