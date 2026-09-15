@@ -18,7 +18,7 @@ class RepositoryImpl @Inject constructor(private val JsonKeeperAPI: IJsonKeeperA
         }
     }
 }
-
+```
 
 ### ViewModel
 
@@ -84,7 +84,7 @@ kapt("com.google.dagger:hilt-android-compiler:2.60")
 class MyApplication : Application()
 ```
 
-```
+
 ### RepositoryModule
 
 > Text that is a quote
